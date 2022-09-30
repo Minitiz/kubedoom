@@ -62,12 +62,13 @@ type Mode interface {
 }
 
 type podmode struct {
+	label string
 }
 
 func (m podmode) getEntities() []string {
 	var args []string
 	if namespace, exists := os.LookupEnv("NAMESPACE"); exists {
-		args = []string{"kubectl", "get", "pods", "--namespace", namespace, "-o", "go-template", "--template={{range .items}}{{.metadata.namespace}}/{{.metadata.name}} {{end}}"}
+		args = []string{"kubectl", "get", "pods", "-l", m.label, "--namespace", namespace, "-o", "go-template", "--template={{range .items}}{{.metadata.namespace}}/{{.metadata.name}} {{end}}"}
 	} else {
 		args = []string{"kubectl", "get", "pods", "-A", "-o", "go-template", "--template={{range .items}}{{.metadata.namespace}}/{{.metadata.name}} {{end}}"}
 	}
@@ -148,14 +149,18 @@ func socketLoop(listener net.Listener, mode Mode) {
 
 func main() {
 	var modeFlag string
+	var labelFlag string
 	flag.StringVar(&modeFlag, "mode", "pods", "What to kill pods|namespaces")
+	flag.StringVar(&labelFlag, "label", "", "labels selected")
 
 	flag.Parse()
 
 	var mode Mode
 	switch modeFlag {
 	case "pods":
-		mode = podmode{}
+		mode = podmode{
+			label: labelFlag,
+		}
 	case "namespaces":
 		mode = nsmode{}
 	default:
