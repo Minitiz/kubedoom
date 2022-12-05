@@ -32,7 +32,8 @@ func sortJob(all []string) []string {
 }
 
 func (m Mode) GetEntities(MONSTERS []string) []string {
-	if m.Respawn && firstIteration {
+	if !m.Respawn && firstIteration {
+		log.Println("JE RETOURNE", MONSTERS)
 		return MONSTERS
 	}
 	args := []string{"kubectl", "get", "pods", "-l", m.Label, "-A", "-o", "go-template", "--template={{range .items}}{{.metadata.namespace}}/{{.metadata.name}}/{{.status.phase}} {{end}}"}

@@ -20,7 +20,7 @@ func hash(input string) int32 {
 	return hash
 }
 
-func Run(listener net.Listener, mode resources.Type) {
+func Run(listener net.Listener, mode resources.Data) {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -46,6 +46,7 @@ func Run(listener net.Listener, mode resources.Type) {
 						log.Fatal("Could not write to socker file")
 					}
 				}
+				MONSTERS = entities
 				conn.Close()
 				stop = true
 			} else if strings.HasPrefix(strbytes, "kill ") {
