@@ -8,22 +8,11 @@ import (
 )
 
 type ClientSet struct {
-	Test  *Monster
-	Test2 *Entities
+	Monster  *Monster
+	Entities *Entities
 }
 
-func (c *ClientSet) Add() monsters.IMonster {
-	return &monsters.Monsters{}
-}
-
-func (c *ClientSet) Entities() Entities {
-	return *c.Entities
-}
-
-type Data interface {
-	Monster
-	Entities
-}
+type Data map[string]Entities
 
 type Monster interface {
 	Add(monsters.Monster)
@@ -50,23 +39,13 @@ func New(modeFlag string, labelFlag string, respawnFlag bool) Resources {
 	}
 }
 
-func (r Resources) Create() Data {
+func (r Resources) Create() Entities {
 	// monster := new(monsters.Monsters)
-	switch r.modeFlag {
-	case "ingress":
-		return ClientSet{
-			Test:  monsters.Monsters{},
-			Test2: ingress.Mode{Label: r.labelFlag, Respawn: r.respawnFlag},
-		}
-	case "completed":
-		return ClientSet{
-			*Monster:  monsters.Monsters{},
-			*Entities: completed.Mode{Label: r.labelFlag, Respawn: r.respawnFlag},
-		}
-	default:
-		return ClientSet{
-			*Monster:  monsters.Monsters{},
-			*Entities: pod.Mode{Label: r.labelFlag, Respawn: r.respawnFlag},
-		}
-	}
+
+	var data Data = make(Data)
+	data["ingress"] = &ingress.Mode{Label: r.labelFlag, Respawn: r.respawnFlag}
+	data["completed"] = &completed.Mode{Label: r.labelFlag, Respawn: r.respawnFlag}
+	data["pod"] = &pod.Mode{Label: r.labelFlag, Respawn: r.respawnFlag}
+
+	return data[r.modeFlag]
 }

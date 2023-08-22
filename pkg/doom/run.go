@@ -1,6 +1,7 @@
 package doom
 
 import (
+	"fmt"
 	"kubedoom/pkg/resources"
 	"log"
 	"net"
@@ -20,7 +21,8 @@ func hash(input string) int32 {
 	return hash
 }
 
-func Run(listener net.Listener, mode resources.Data) {
+func Run(listener net.Listener, mode resources.Entities) {
+	fmt.Println(mode)
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
